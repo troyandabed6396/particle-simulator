@@ -1,7 +1,7 @@
 /**
  * Represents a collision between a particle and another particle, or a particle and a wall.
  */
-public class Event implements Comparable<Event> {
+public abstract class Event implements Comparable<Event> {
 	double _timeOfEvent;
 	double _timeEventCreated;
 
@@ -28,4 +28,6 @@ public class Event implements Comparable<Event> {
 			return -1;
 		}
 	}
+
+	public abstract void update();
 }

@@ -1,9 +1,7 @@
 import java.util.*;
-import java.util.function.*;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import javax.sound.sampled.*;
 
 public class ParticleSimulator extends JPanel {
 	private Heap<Event> _events;
@@ -49,6 +47,11 @@ public class ParticleSimulator extends JPanel {
 		TerminationEvent (double timeOfEvent) {
 			super(timeOfEvent, 0);
 		}
+
+		@Override
+		public void update() {
+			// Do nothing
+		}
 	}
 
 	/**
@@ -74,17 +77,17 @@ public class ParticleSimulator extends JPanel {
 			double horizontalWallCollisionTime = p.getHorizontalWallCollisionTime(_width);
 
 			if (verticalWallCollisionTime != Double.POSITIVE_INFINITY) {
-				_events.add(new Event(lastTime + verticalWallCollisionTime, lastTime));
+				_events.add(new WallCollisionEvent(lastTime + verticalWallCollisionTime, lastTime, p, true));
 			}
 			if (horizontalWallCollisionTime != Double.POSITIVE_INFINITY) {
-				_events.add(new Event(lastTime + horizontalWallCollisionTime, lastTime));
+				_events.add(new WallCollisionEvent(lastTime + horizontalWallCollisionTime, lastTime, p, false));
 			}
 
 			for (Particle q : _particles) {
 				if (p != q) {
 					double collisionTime = p.getCollisionTime(q);
 					if (collisionTime != Double.POSITIVE_INFINITY) {
-						_events.add(new Event(lastTime + collisionTime, lastTime));
+						_events.add(new ParticleCollisionEvent(lastTime + collisionTime, lastTime, p, q));
 					}
 				}
 			}
@@ -102,7 +105,7 @@ public class ParticleSimulator extends JPanel {
 			}
 
 			// Check if event still valid; if not, then skip this event
-			if (!isEventValid(event)) {
+			if (!isEventValid(event) || event._timeOfEvent < lastTime) {
 				continue;
 			}
 
@@ -120,21 +123,7 @@ public class ParticleSimulator extends JPanel {
 			// Update the velocity of the particle(s) involved in the collision
 			// (either for a particle-wall collision or a particle-particle collision).
 			// You should call the Particle.updateAfterCollision method at some point.
-			for (Particle p : _particles) {
-				if (p.getVerticalWallCollisionTime(_width) < 1e-6) {
-					p.updateAfterVerticalWallCollision(event._timeOfEvent);
-				} else if (p.getHorizontalWallCollisionTime(_width) < 1e-6) {
-					p.updateAfterHorizontalWallCollision(event._timeOfEvent);
-				}
-
-				for (Particle q : _particles) {
-					if (p != q) {
-						if (p.getCollisionTime(q) != Double.POSITIVE_INFINITY) {
-							p.updateAfterCollision(event._timeOfEvent, q);
-						}
-					}
-				}
-			}
+			event.update();
 
 			// Enqueue new events for the particle(s) that were involved in this event.
 			for (Particle p : _particles) {
@@ -142,17 +131,17 @@ public class ParticleSimulator extends JPanel {
 				double horizontalWallCollisionTime = p.getHorizontalWallCollisionTime(_width);
 
 				if (verticalWallCollisionTime != Double.POSITIVE_INFINITY) {
-					_events.add(new Event(event._timeOfEvent + verticalWallCollisionTime, event._timeOfEvent));
+					_events.add(new WallCollisionEvent(event._timeOfEvent + verticalWallCollisionTime, event._timeOfEvent, p, true));
 				}
 				if (horizontalWallCollisionTime != Double.POSITIVE_INFINITY) {
-					_events.add(new Event(event._timeOfEvent + horizontalWallCollisionTime, event._timeOfEvent));
+					_events.add(new WallCollisionEvent(event._timeOfEvent + horizontalWallCollisionTime, event._timeOfEvent, p, false));
 				}
 
 				for (Particle q : _particles) {
 					if (p != q) {
 						double collisionTime = p.getCollisionTime(q);
 						if (collisionTime != Double.POSITIVE_INFINITY) {
-							_events.add(new Event(event._timeOfEvent + collisionTime, event._timeOfEvent));
+							_events.add(new ParticleCollisionEvent(event._timeOfEvent + collisionTime, event._timeOfEvent, p, q));
 						}
 					}
 				}
