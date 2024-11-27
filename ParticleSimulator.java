@@ -73,6 +73,7 @@ public class ParticleSimulator extends JPanel {
 		// collisions between all the particles and each other,
 		// and all the particles and the walls.
 		for (Particle p : _particles) {
+			// Add wall collision events
 			double verticalWallCollisionTime = p.getVerticalWallCollisionTime(_width);
 			double horizontalWallCollisionTime = p.getHorizontalWallCollisionTime(_width);
 
@@ -83,6 +84,7 @@ public class ParticleSimulator extends JPanel {
 				_events.add(new WallCollisionEvent(lastTime + horizontalWallCollisionTime, lastTime, p, false));
 			}
 
+			// Add particle collision events
 			for (Particle q : _particles) {
 				if (p != q) {
 					double collisionTime = p.getCollisionTime(q);
@@ -96,7 +98,6 @@ public class ParticleSimulator extends JPanel {
 		_events.add(new TerminationEvent(_duration));
 		while (_events.size() > 0) {
 			Event event = _events.removeFirst();
-			System.out.println("Processing event at time " + event._timeOfEvent + " created at time " + event._timeEventCreated);
 			double delta = event._timeOfEvent - lastTime;
 
 			if (event instanceof TerminationEvent) {
@@ -127,6 +128,7 @@ public class ParticleSimulator extends JPanel {
 
 			// Enqueue new events for the particle(s) that were involved in this event.
 			for (Particle p : _particles) {
+				// Add wall collision events
 				double verticalWallCollisionTime = p.getVerticalWallCollisionTime(_width);
 				double horizontalWallCollisionTime = p.getHorizontalWallCollisionTime(_width);
 
@@ -137,6 +139,7 @@ public class ParticleSimulator extends JPanel {
 					_events.add(new WallCollisionEvent(event._timeOfEvent + horizontalWallCollisionTime, event._timeOfEvent, p, false));
 				}
 
+				// Add particle collision events
 				for (Particle q : _particles) {
 					if (p != q) {
 						double collisionTime = p.getCollisionTime(q);
@@ -164,6 +167,10 @@ public class ParticleSimulator extends JPanel {
 		}
 	}
 
+	/**
+	 * Helper method to determine if an event is still valid.
+	 * An event is valid if the last update time of all particles is less than the time of the event.
+	 */
 	private boolean isEventValid (Event event) {
 		for (Particle p : _particles) {
 			if (p.get_lastUpdateTime() > event._timeEventCreated) {

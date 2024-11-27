@@ -140,6 +140,12 @@ public class Particle {
 		return t;
 	}
 
+	/**
+	 * Computes and returns the time when (if ever) this particle will collide with a vertical wall,
+	 * or infinity if the particle will never collide with a vertical wall given its current velocity.
+	 * @param width the width of the simulation window
+	 * @return the time with the particle will collide with a vertical wall, or infinity if it will never collide
+	 */
 	public double getVerticalWallCollisionTime (int width) {
 		double t = Double.POSITIVE_INFINITY;
 		if (_vx > 0) {
@@ -150,6 +156,12 @@ public class Particle {
 		return t;
 	}
 
+	/**
+	 * Computes and returns the time when (if ever) this particle will collide with a horizontal wall,
+	 * or infinity if the particle will never collide with a horizontal wall given its current velocity.
+	 * @param width the width of the simulation window
+	 * @return the time with the particle will collide with a horizontal wall, or infinity if it will never collide
+	 */
 	public double getHorizontalWallCollisionTime (int width) {
 		double t = Double.POSITIVE_INFINITY;
 		if (_vy > 0) {
@@ -160,16 +172,28 @@ public class Particle {
 		return t;
 	}
 
+	/**
+	 * Updates the velocity of the particle after a collision with a vertical wall.
+	 * @param now the current time in the simulation
+	 */
 	public void updateAfterVerticalWallCollision (double now) {
 		_vx = -_vx;
 		_lastUpdateTime = now;
 	}
 
+	/**
+	 * Updates the velocity of the particle after a collision with a horizontal wall.
+	 * @param now the current time in the simulation
+	 */
 	public void updateAfterHorizontalWallCollision (double now) {
 		_vy = -_vy;
 		_lastUpdateTime = now;
 	}
 
+	/**
+	 * Returns the last time this particle was updated.
+	 * @return the last time this particle was updated
+	 */
 	public double get_lastUpdateTime() {
 		return _lastUpdateTime;
 	}

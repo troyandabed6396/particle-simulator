@@ -29,5 +29,8 @@ public abstract class Event implements Comparable<Event> {
 		}
 	}
 
+	/**
+	 * Updates the state after the event has occurred.
+	 */
 	public abstract void update();
 }
