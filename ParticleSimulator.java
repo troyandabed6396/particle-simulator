@@ -52,6 +52,11 @@ public class ParticleSimulator extends JPanel {
 		public void update() {
 			// Do nothing
 		}
+
+		@Override
+		public boolean isValid() {
+			return false;
+		}
 	}
 
 	/**
@@ -72,7 +77,8 @@ public class ParticleSimulator extends JPanel {
 		// Create initial events, i.e., all the possible
 		// collisions between all the particles and each other,
 		// and all the particles and the walls.
-		for (Particle p : _particles) {
+		for (int i = 0; i < _particles.size(); i++) {
+			Particle p = _particles.get(i);
 			// Add wall collision events
 			double verticalWallCollisionTime = p.getVerticalWallCollisionTime(_width);
 			double horizontalWallCollisionTime = p.getHorizontalWallCollisionTime(_width);
@@ -85,7 +91,8 @@ public class ParticleSimulator extends JPanel {
 			}
 
 			// Add particle collision events
-			for (Particle q : _particles) {
+			for (int j = i + 1; j < _particles.size(); j++) {
+				Particle q = _particles.get(j);
 				if (p != q) {
 					double collisionTime = p.getCollisionTime(q);
 					if (collisionTime != Double.POSITIVE_INFINITY) {
@@ -106,7 +113,7 @@ public class ParticleSimulator extends JPanel {
 			}
 
 			// Check if event still valid; if not, then skip this event
-			if (!isEventValid(event) || event._timeOfEvent < lastTime) {
+			if (!event.isValid()) {
 				continue;
 			}
 
@@ -127,7 +134,8 @@ public class ParticleSimulator extends JPanel {
 			event.update();
 
 			// Enqueue new events for the particle(s) that were involved in this event.
-			for (Particle p : _particles) {
+			for (int i = 0; i < _particles.size(); i++) {
+				Particle p = _particles.get(i);
 				// Add wall collision events
 				double verticalWallCollisionTime = p.getVerticalWallCollisionTime(_width);
 				double horizontalWallCollisionTime = p.getHorizontalWallCollisionTime(_width);
@@ -140,7 +148,8 @@ public class ParticleSimulator extends JPanel {
 				}
 
 				// Add particle collision events
-				for (Particle q : _particles) {
+				for (int j = i + 1; j < _particles.size(); j++) {
+					Particle q = _particles.get(j);
 					if (p != q) {
 						double collisionTime = p.getCollisionTime(q);
 						if (collisionTime != Double.POSITIVE_INFINITY) {
@@ -165,19 +174,6 @@ public class ParticleSimulator extends JPanel {
 		for (Particle p : _particles) {
 			System.out.println(p);
 		}
-	}
-
-	/**
-	 * Helper method to determine if an event is still valid.
-	 * An event is valid if the last update time of all particles is less than the time of the event.
-	 */
-	private boolean isEventValid (Event event) {
-		for (Particle p : _particles) {
-			if (p.get_lastUpdateTime() > event._timeEventCreated) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	public static void main (String[] args) throws IOException {

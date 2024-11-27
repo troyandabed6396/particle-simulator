@@ -26,4 +26,13 @@ public class WallCollisionEvent extends Event {
             _p.updateAfterHorizontalWallCollision(_timeOfEvent);
         }
     }
+
+    /**
+     * Determines if the event is valid.
+     * @return true if the event is valid, false otherwise
+     */
+    @Override
+    public boolean isValid() {
+        return _p.get_lastUpdateTime() <= _timeEventCreated;
+    }
 }

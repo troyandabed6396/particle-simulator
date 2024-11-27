@@ -33,4 +33,10 @@ public abstract class Event implements Comparable<Event> {
 	 * Updates the state after the event has occurred.
 	 */
 	public abstract void update();
+
+	/**
+	 * Determines if the event is valid.
+	 * @return true if the event is valid, false otherwise
+	 */
+	public abstract boolean isValid();
 }

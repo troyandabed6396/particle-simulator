@@ -21,4 +21,13 @@ public class ParticleCollisionEvent extends Event {
     public void update () {
         _p1.updateAfterCollision(_timeOfEvent, _p2);
     }
+
+    /**
+     * Determines if the event is valid.
+     * @return true if the event is valid, false otherwise
+     */
+    @Override
+    public boolean isValid() {
+        return _p1.get_lastUpdateTime() <= _timeEventCreated && _p2.get_lastUpdateTime() <= _timeEventCreated;
+    }
 }
