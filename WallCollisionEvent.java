@@ -18,6 +18,7 @@ public class WallCollisionEvent extends Event {
     /**
      * Updates the velocity of the particle after the collision.
      */
+    @Override
     public void update () {
         if (_vertical) {
             _p.updateAfterVerticalWallCollision(_timeOfEvent);

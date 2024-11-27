@@ -17,6 +17,7 @@ public class ParticleCollisionEvent extends Event {
     /**
      * Updates the velocity of the particles after the collision.
      */
+    @Override
     public void update () {
         _p1.updateAfterCollision(_timeOfEvent, _p2);
     }
